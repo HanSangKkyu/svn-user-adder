@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>SVN 유저 추가 프로그램</title>
+  </head>
+  <body>
+    <div>
+      <div>
+        <div>SVN 저장소 URL</div>
+        <textarea id="repoPath" style="width: 100%; height: 10em;" placeholder="ex)&#13;&#10;svn://localhost/repo1&#13;&#10;svn://localhost/repo2&#13;&#10;svn://localhost/repo3&#13;&#10;"></textarea>
+      </div>
+      <div>
+        <div>추가할 사용자 목록</div>
+        <textarea id="userList" style="width: 100%; height: 10em;" placeholder="ex)&#13;&#10;hansk&#13;&#10;jungjh&#13;&#10;jungdw&#13;&#10;boss&#13;&#10;비밀번호는 모두 1234로 초기화 됩니다."></textarea>
+      </div>
+      <input type="button" value="만들기" onclick="make()">
+      <div id="output">상태가 표시되는 곳입니다.</div>
+    </div>
+    <script>
+      const { ipcRenderer } = require('electron');
+      var repoStartPath=''; 
+
+      ipcRenderer.on('repoStartPath-reply', (event, arg) => {
+          console.log(arg)
+          repoStartPath = arg;
+          document.getElementById('output').innerText = 'svn 경로가 '+arg+'로 설정되었습니다. 아닐시 configure.conf 파일을 수정하고 프로그램 재시작해주세요.';
+      });
+
+      ipcRenderer.on('alert-result', (event, arg) => {
+        var array = arg.toString().split("\n");
+        var res = "";
+        for (let i = 0; i < array.length; i++) {
+          const element = array[i];
+          if(array[i].indexOf("작업성공") != -1){
+            res += "<div>"+array[i]+"</div>";
+          }else{
+            res += "<div style='color:red'>"+array[i]+"</div>";
+          }
+        }
+        document.getElementById('output').innerHTML = res;
+      });
+
+      ipcRenderer.send('repoStartPath-check', 'async ping');
+      
+      function make(){
+        var repoPath = document.getElementById("repoPath").value;
+        var userList = document.getElementById("userList").value;
+        console.log(repoPath);
+        console.log(userList);
+
+        // repoPath : SVN 저장소 URL
+        // userList : 추가할 사용자 목록
+        // repoStartPath : SVN 저장소들이 있는 로컬 경로
+        ipcRenderer.send('addUsers', repoPath+'#$'+userList+'#$'+repoStartPath);
+      }
+  </script>
+  </body>
+</html>
