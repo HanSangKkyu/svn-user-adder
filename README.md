@@ -2,8 +2,9 @@
 쉽게 svn 유저를 추가할 수 있게 도와주는 프로그램
 ## Description
 svn 경로를 입력하고, 추가할 유저목록을 입력하면 svn 유저가 추가됩니다.
+사용된 기술 : nodejs, electron
 ## Visuals
-
+![image](https://user-images.githubusercontent.com/31759313/103838133-a4e73400-50cf-11eb-84d8-480d826dd8a6.png)
 ## Installation
 + 시작하기
 ``` bash
